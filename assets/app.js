@@ -192,7 +192,6 @@ function makeDayCell(dt, inMonth) {
       item.title = fest[0];
       item.addEventListener('click', event => {
         event.stopPropagation();
-        showDay(dt);
       });
       events.appendChild(item);
     });
@@ -205,6 +204,8 @@ function makeDayCell(dt, inMonth) {
     state.selected = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
     render();
     hideTip();
+    const selectedCell = [...calendar.children].find(el => el.classList.contains('selected'));
+    if (selectedCell) showTip(state.selected, selectedCell);
   });
   return cell;
 }
