@@ -118,13 +118,22 @@ function lunarText(dt) {
   return lunar.ld === 1 ? `${lunar.str.split('月')[0]}月` : lunar.str;
 }
 function festsFor(dt) {
-  const y = dt.getFullYear(), m = dt.getMonth() + 1, d = dt.getDate(), res = [];
-  const cn = NAME[y] && NAME[y][`${m}-${d}`];
-  if (cn) res.push(cn);
-  const intl = INTL[`${m}-${d}`];
-  if (intl) res.push(intl);
-  lunarFests(y, m, d).forEach(name => res.push([name, 2]));
-  return res;
+  const y = dt.getFullYear(), m = dt.getMonth() + 1, d = dt.getDate();
+  const items = [];
+
+  const add = item => {
+    if (!item) return;
+    const [label, type = 2] = Array.isArray(item) ? item : [item, 2];
+    const normalized = label.replace(/（.*?）/g, '').trim();
+    if (normalized && !items.some(existing => existing[0].replace(/（.*?）/g, '').trim() === normalized)) {
+      items.push([label, type]);
+    }
+  };
+
+  add(NAME[y] && NAME[y][`${m}-${d}`]);
+  add(INTL[`${m}-${d}`]);
+  lunarFests(y, m, d).forEach(name => add(name));
+  return items;
 }
 function eventLabel(label, type) {
   const clean = label.replace(/（.*?）/g, '').trim();
