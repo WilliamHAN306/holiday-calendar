@@ -241,3 +241,34 @@ footer{
   .toolbar{flex-direction:column;align-items:stretch}
   .day{min-height:82px}
 }
+
+/* hover tooltip */
+.day-tip{
+  position:absolute;
+  z-index:20;
+  min-width:210px;
+  max-width:280px;
+  background:rgba(255,255,255,.96);
+  border:1px solid rgba(0,0,0,.08);
+  border-radius:12px;
+  box-shadow:0 12px 30px rgba(0,0,0,.15);
+  padding:12px 13px;
+  pointer-events:none;
+  opacity:0;
+  transform:translateY(4px) scale(.98);
+  transition:opacity .12s ease, transform .12s ease;
+  backdrop-filter:saturate(180%) blur(18px);
+}
+.day-tip.on{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+.day-tip .tip-date{color:var(--muted);font-size:11px}
+.day-tip h4{margin:3px 0 8px;font-size:16px;font-weight:700}
+.day-tip .tip-row{display:flex;justify-content:space-between;gap:12px;font-size:12px;padding:4px 0;border-top:1px solid rgba(0,0,0,.05)}
+.day-tip .tip-row:first-of-type{border-top:0}
+.day-tip .tip-row span:first-child{color:var(--muted)}
+.day-tip.festival .fest-line{margin-top:5px;font-size:12px;padding:3px 6px;border-radius:6px;display:inline-block;margin-right:4px}
+.day-tip.festival .fest-line.cn{background:rgba(37,99,235,.12);color:var(--cn)}
+.day-tip.festival .fest-line.trad{background:rgba(217,119,6,.12);color:var(--trad)}
+.day-tip.festival .fest-line.intl{background:rgba(130,80,223,.12);color:var(--intl)}

@@ -199,10 +199,12 @@ function makeDayCell(dt, inMonth) {
     cell.appendChild(events);
   }
 
+  cell.addEventListener('mouseenter', () => showTip(dt, cell));
+  cell.addEventListener('mouseleave', hideTip);
   cell.addEventListener('click', () => {
     state.selected = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
     render();
-    showDay(dt);
+    hideTip();
   });
   return cell;
 }
@@ -272,6 +274,61 @@ function render() {
   renderMini();
 }
 
+const dayTip = document.getElementById('dayTip');
+let tipRaf = 0;
+
+function tipStatus(statusType) {
+  return {
+    rest: ['✅ 今天休息 / 放假', 'var(--rest)'],
+    off: ['🛌 今天是周末休息日', 'var(--off)'],
+    work: ['💼 今天上班', 'var(--work)']
+  }[statusType];
+}
+
+function showTip(dt, cell) {
+  const st = status(dt);
+  const fests = festsFor(dt);
+  const lunar = solar2lunar(dt.getFullYear(), dt.getMonth() + 1, dt.getDate());
+  const [title, color] = tipStatus(st);
+  const rows = [
+    ['农历', lunar.str],
+    ['生肖', `${lunar.animal}年`]
+  ];
+  if (fests.length) {
+    rows.push(['节日', fests.map(f => eventLabel(f[0], f[1])).join(' / ')]);
+  } else {
+    rows.push(['节日', '无']);
+  }
+  rows.push(['安排', { rest: '可休息，不用上班', off: '周末，正常双休', work: '需要上班' }[st]]);
+  dayTip.className = `day-tip on${fests.length ? ' festival' : ''}`;
+  dayTip.innerHTML = `
+    <div class="tip-date">${dt.getFullYear()}年${dt.getMonth() + 1}月${dt.getDate()}日 · 星期${'日一二三四五六'[dt.getDay()]}</div>
+    <h4 style="color:${color}">${title}</h4>
+    ${rows.map(([k, v]) => `<div class="tip-row"><span>${k}</span><span>${v}</span></div>`).join('')}
+  `;
+  dayTip.setAttribute('aria-hidden', 'false');
+
+  cancelAnimationFrame(tipRaf);
+  tipRaf = requestAnimationFrame(() => {
+    const cellRect = cell.getBoundingClientRect();
+    const tipRect = dayTip.getBoundingClientRect();
+    const scrollX = window.scrollX || window.pageXOffset;
+    const scrollY = window.scrollY || window.pageYOffset;
+    let left = cellRect.left + scrollX + cellRect.width / 2 - tipRect.width / 2;
+    let top = cellRect.top + scrollY - tipRect.height - 8;
+    if (top < scrollY + 8) top = cellRect.bottom + scrollY + 8;
+    left = Math.max(scrollX + 8, Math.min(left, scrollX + document.documentElement.clientWidth - tipRect.width - 8));
+    dayTip.style.left = `${Math.round(left)}px`;
+    dayTip.style.top = `${Math.round(top)}px`;
+  });
+}
+
+function hideTip() {
+  cancelAnimationFrame(tipRaf);
+  dayTip.classList.remove('on');
+  dayTip.setAttribute('aria-hidden', 'true');
+}
+
 function showDay(dt) {
   const fests = festsFor(dt);
   const st = status(dt);
@@ -305,6 +362,9 @@ function showDay(dt) {
   document.getElementById('mBody').innerHTML = html;
   document.getElementById('modal').classList.add('on');
 }
+
+window.addEventListener('scroll', hideTip, { passive: true });
+window.addEventListener('resize', hideTip);
 
 /* ================= 初始化 ================= */
 document.getElementById('yearSel').innerHTML = [2024, 2025, 2026, 2027, 2028]
