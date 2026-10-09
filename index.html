@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>日历 · 节日与休息安排</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="mini-calendar">
+      <div class="mini-head">
+        <button id="miniPrev" aria-label="上个月">‹</button>
+        <div id="miniTitle">2026年10月</div>
+        <button id="miniNext" aria-label="下个月">›</button>
+      </div>
+      <div class="mini-grid" id="miniGrid"></div>
+    </div>
+    <div class="side-actions">
+      <button id="goToday">今天</button>
+      <button id="goSelected">所选日期</button>
+    </div>
+    <div class="side-note">
+      <strong>标注说明</strong>
+      <div><span class="chip rest">休</span>法定节假日休息</div>
+      <div><span class="chip work">班</span>调休补班</div>
+      <div><span class="chip off">周</span>周末休息</div>
+    </div>
+  </aside>
+
+  <main class="calendar-pane">
+    <header class="toolbar">
+      <h1 id="monthTitle">2026年10月</h1>
+      <div class="controls">
+        <select id="yearSel" aria-label="年份"></select>
+        <select id="monthSel" aria-label="月份"></select>
+        <button id="prev" aria-label="上个月">‹</button>
+        <button id="today">今天</button>
+        <button id="next" aria-label="下个月">›</button>
+      </div>
+    </header>
+    <div class="month" id="calendar"></div>
+  </main>
+</div>
+
+<div class="modal" id="modal">
+  <div class="card">
+    <div id="mDate" class="m-date"></div>
+    <h3 id="mTitle"></h3>
+    <div id="mBody"></div>
+    <button class="close" onclick="document.getElementById('modal').classList.remove('on')">关闭</button>
+  </div>
+</div>
+
+<script src="assets/app.js" defer></script>
+</body>
+</html>
